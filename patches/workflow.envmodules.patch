@@ -1,0 +1,21 @@
+--- common/workflow.py.orig	2025-10-19 21:09:50.000000000 -0700
++++ common/workflow.py	2025-10-19 21:22:51.000000000 -0700
+@@ -81,16 +81,12 @@
+             "rerun-triggers": ["mtime", "params"],
+             "scheduler": "greedy",
+             "nolock": True,
+-            "software-deployment-method": "conda" if not container else ["conda", "apptainer"],
+-            "conda-prefix": filepath("./.environments"),
+-            "conda-cleanup-pkgs": "cache",
+-            "apptainer-prefix": filepath("./.environments"),
+             "directory": self.output_directory
+         }
+-        _command = ["snakemake", "--cores", f"{threads}", "--snakefile", os.path.join(self.workflow_directory, "workflow.smk")]
++        _command = ["snakemake", "--use-envmodules", "--cores", f"{threads}", "--snakefile", os.path.join(self.workflow_directory, "workflow.smk")]
+         _command += ["--configfile", os.path.join(self.workflow_directory, "workflow.yaml"), "--profile", self.workflow_directory]
+         workdir_rel = os.path.relpath(self.workflow_directory)
+-        _command_rel = ["snakemake", "--cores", f"{threads}", "--snakefile", os.path.join(workdir_rel, "workflow.smk")]
++        _command_rel = ["snakemake", "--use-envmodules", "--cores", f"{threads}", "--snakefile", os.path.join(workdir_rel, "workflow.smk")]
+         _command_rel += ["--configfile", os.path.join(workdir_rel, "workflow.yaml"), "--profile", workdir_rel]
+         if hpc:
+             self.hpc = hpc

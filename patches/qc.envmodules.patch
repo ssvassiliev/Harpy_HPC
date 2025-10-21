@@ -1,0 +1,35 @@
+--- snakefiles/qc.smk.orig	2025-10-19 19:07:19.000000000 -0700
++++ snakefiles/qc.smk	2025-10-19 22:16:17.000000000 -0700
+@@ -57,8 +57,8 @@
+         extra = extra
+     threads:
+         workflow.cores
+-    conda:
+-        "envs/qc.yaml"
++    envmodules: 
++        "fastp/0.24.0",
+     shell: 
+         "fastp {params} --thread {threads} -i {input.fw} -I {input.rv} -o {output.fw} -O {output.rv} -h {output.html} -j {output.json} 2> {log.serr}"
+ 
+@@ -100,7 +100,9 @@
+     log:
+         "logs/barcode.report.log"
+     conda:
+-        "envs/report.yaml"
++        None
++    envmodules:	
++        "r/4.5.0"
+     retries:
+         3
+     shell:
+@@ -124,7 +126,9 @@
+         comment = "--comment \"This report aggregates trimming and quality control metrics reported by fastp.\"",
+         logdir = "reports/data/fastp/"
+     conda:
+-        "envs/qc.yaml"
++        None
++    envmodules:
++        "arrow/21.0.0"
+     shell: 
+         "multiqc {params} > {output} 2> {log}"
+ 
