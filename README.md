@@ -60,7 +60,3 @@ export PATH=$PATH:$PREFIX/harpy-3.1/quarto-1.8.25/bin
 export PATH=$PATH:$PREFIX/harpy-3.1/HapCUT2/build:$PREFIX/harpy-3.1/HapCUT2/utilities
 # sv leviathan
 export PATH=$PATH:$PREFIX/harpy-3.1/LEVIATHAN/bin:$PREFIX/harpy-3.1/LEVIATHAN/LRez/bin
-# sv naibr
-export PATH=$PATH:$PREFIX/harpy-3.1/NAIBR  
-
-update snp_mpileup.smk!
