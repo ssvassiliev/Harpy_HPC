@@ -1,0 +1,62 @@
+--- snakefiles/sv_leviathan.smk.orig	2025-10-22 13:30:30.000000000 -0700
++++ snakefiles/sv_leviathan.smk	2025-10-22 13:37:59.000000000 -0700
+@@ -47,8 +47,8 @@
+         "logs/process_alignments/{sample}.log"
+     threads:
+         min(10, workflow.cores)
+-    conda:
+-        "envs/variants.yaml"
++    envmodules:
++            "samtools/1.22.1"
+     shell:
+         """
+         {{
+@@ -66,8 +66,8 @@
+         fai  = f"{workflow_geno}.fai"
+     log:
+         f"{workflow_geno}.preprocess.log"
+-    conda:
+-        "envs/align.yaml"
++    envmodules:
++        "seqtk/1.4", "bwa/0.7.18", "samtools/1.22.1"
+     shell: 
+         """
+         {{
+@@ -99,8 +99,6 @@
+         extra = extra
+     threads:
+         workflow.cores - 1
+-    conda:
+-        "envs/variants.yaml"
+     shell:
+         "LEVIATHAN -b {input.bam} -i {input.bc_idx} {params} -g {input.genome} -o {output.vcf} -t {threads} --candidates {output.candidates} 2> {log.runlog}"
+ 
+@@ -112,6 +110,8 @@
+         "vcf/{sample}.bcf"
+     container:
+         None
++    envmodules:
++        "bcftools/1.22"
+     shell:        
+         "bcftools sort -Ob --output {output} {input} 2> /dev/null"
+ 
+@@ -122,6 +122,8 @@
+         temp("reports/data/{sample}.sv.stats")
+     container:
+         None
++    envmodules:
++        "bcftools/1.22"
+     shell:
+         """
+         {{
+@@ -195,8 +197,8 @@
+     params:
+         sample= lambda wc: "-P sample:" + wc.get('sample'),
+         contigs= f"-P contigs:{plot_contigs}"
+-    conda:
+-        "envs/report.yaml"
++    envmodules:
++         "r/4.5.0", "arrow/21.0.0"
+     retries:
+         3
+     shell:
