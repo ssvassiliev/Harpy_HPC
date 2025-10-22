@@ -1,0 +1,97 @@
+--- snakefiles/phase.smk.orig	2025-10-22 10:24:09.000000000 -0700
++++ snakefiles/phase.smk	2025-10-22 11:19:28.000000000 -0700
+@@ -77,9 +77,10 @@
+         csi = temp("workflow/input/original/{sample}.bcf.csi")
+     container:
+         None
++    envmodules:
++            "bcftools/1.22"
+     shell:
+         "bcftools view -Ob -W -s {wildcards.sample} -o {output.vcf} {input}"
+-
+ rule isolate_het_snps:
+     input: 
+         "workflow/input/original/{sample}.bcf"
+@@ -87,6 +88,8 @@
+         temp("workflow/input/heterozygotes/{sample}.het.vcf")
+     container:
+         None
++    envmodules:
++            "bcftools/1.22"
+     shell:
+         "bcftools view -m 2 -M 2 -i 'GT=\"het\"' {input} > {output}"
+ 
+@@ -97,6 +100,8 @@
+         "{bam}.bai"
+     container:
+         None
++    envmodules:
++            "samtools/1.22.1"
+     shell:
+         "samtools index {input}"
+ 
+@@ -111,6 +116,8 @@
+             f"workflow/reference/{bn}.preprocess.log"
+         container:
+             None
++        envmodules:
++            "samtools/1.22.1", "seqtk/1.4"
+         shell: 
+             """
+             {{
+@@ -136,8 +143,6 @@
+     params:
+         static = f"{indelarg} {linkarg} --mmq {map_qual} --mbq {base_qual} --nf 1 --maxfragments 1500000",
+         purge_invalid = invalid_regex.get(bc_type, "'$4 !~ /N/'")
+-    conda:
+-        "envs/phase.yaml"
+     shell:
+         """
+         extractHAIRS {params.static} --bam {input.bam} --VCF {input.vcf} --out {output.all_bc} > {log} 2>&1
+@@ -155,8 +160,6 @@
+         "logs/link_fragments/{sample}.linked.log"
+     params:
+         f"-d {molecule_distance} --use-tag"
+-    conda:
+-        "envs/phase.yaml"
+     shell:
+         "LinkFragments.py --bam {input.bam} --VCF {input.vcf} --fragments {input.fragments} --out {output} {params} > {log} 2>&1"
+ 
+@@ -185,6 +188,8 @@
+         "phase_blocks/{sample}.phased.vcf.gz"
+     container:
+         None
++    envmodules:
++            "bcftools/1.22"
+     shell:
+         "bcftools view -Oz6 -o {output} --write-index {input}"
+ 
+@@ -205,6 +210,8 @@
+         2
+     container:
+         None
++    envmodules:
++            "bcftools/1.22"
+     shell:
+         "bcftools annotate -a {input.phase} -o {output.bcf} {params} {input.orig} 2> {log}"
+ 
+@@ -230,6 +237,8 @@
+         workflow.cores
+     container:
+         None
++    envmodules:
++            "bcftools/1.22"
+     shell:
+         "bcftools merge --threads {threads} --force-single -l {input.filelist} -Ob -o {output.bcf} --write-index"
+ 
+@@ -275,8 +284,8 @@
+         "logs/report.log"
+     params:
+         f"-P contigs:{plot_contigs}"
+-    conda:
+-        "envs/report.yaml"
++    envmodules:
++         "r/4.5.0", "arrow/21.0.0"
+     retries:
+         3
+     shell:
