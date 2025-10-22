@@ -1,5 +1,5 @@
---- snp_mpileup.smk.orig	2025-10-21 16:37:37.000000000 -0700
-+++ snp_mpileup.smk	2025-10-21 18:32:14.000000000 -0700
+--- snakefiles/snp_mpileup.smk.orig	2025-10-21 16:37:37.000000000 -0700
++++ snakefiles/snp_mpileup.smk	2025-10-21 18:32:14.000000000 -0700
 @@ -48,6 +48,8 @@
          f"--gzi-idx {workflow_geno}.gzi" if genome_zip else ""
      container:
