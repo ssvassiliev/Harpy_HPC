@@ -1,0 +1,22 @@
+--- snakefiles/sv_naibr.smk.orig	2025-10-22 14:34:25.000000000 -0700
++++ snakefiles/sv_naibr.smk	2025-10-22 15:20:42.000000000 -0700
+@@ -165,6 +165,8 @@
+         f"--gzi-idx {workflow_geno}.gzi" if genome_zip else ""
+     container:
+         None
++    envmodules:
++        "samtools/1.22.1", "seqtk/1.4"
+     shell: 
+         """
+         {{
+@@ -206,8 +208,8 @@
+     params:
+         sample= lambda wc: "-P sample:" + wc.get('sample'),
+         contigs= f"-P contigs:{plot_contigs}"
+-    conda:
+-        "envs/report.yaml"
++    envmodules:
++         "r/4.5.0", "arrow/21.0.0"
+     retries:
+         3
+     shell:

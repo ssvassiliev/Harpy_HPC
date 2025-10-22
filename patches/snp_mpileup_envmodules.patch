@@ -1,76 +1,11 @@
---- snakefiles/snp_mpileup.smk.orig	2025-10-21 16:37:37.000000000 -0700
-+++ snakefiles/snp_mpileup.smk	2025-10-21 18:32:14.000000000 -0700
-@@ -48,6 +48,8 @@
-         f"--gzi-idx {workflow_geno}.gzi" if genome_zip else ""
+--- snakefiles/snp_mpileup.smk.orig	2025-10-22 15:23:08.000000000 -0700
++++ snakefiles/snp_mpileup.smk	2025-10-22 15:19:16.000000000 -0700
+@@ -49,7 +49,7 @@
      container:
          None
-+    envmodules:
-+            "samtools/1.22.1"
+     envmodules:
+-            "samtools/1.22.1"
++            "samtools/1.22.1", "seqtk/1.4"
      shell: 
          """
          {{
-@@ -115,6 +117,8 @@
-         1
-     container:
-         None
-+    envmodules:
-+        "bcftools/1.22"
-     shell:
-         """
-         bcftools mpileup --threads {threads} --fasta-ref {input.genome} --bam-list {input.bamlist} -Ou {params.region} {params.annot_mp} {params.extra} 2> {output.logfile} |
-@@ -131,6 +135,8 @@
-         "logs/sort/{part}.sort.log"
-     container:
-         None
-+    envmodules:
-+            "bcftools/1.22"
-     shell:
-         "bcftools sort --output {output.bcf} --write-index {input.bcf} 2> {log}"
- 
-@@ -169,6 +175,8 @@
-         workflow.cores
-     container:
-         None
-+    envmodules:
-+            "bcftools/1.22"
-     shell:  
-         "bcftools concat -f {input.filelist} --threads {threads} --naive -Ob -o {output} 2> {log}"
- 
-@@ -180,6 +188,8 @@
-         csi = "variants.raw.bcf.csi"
-     container:
-         None
-+    envmodules:
-+            "bcftools/1.22"
-     shell:
-         "bcftools sort --write-index -Ob -o {output.bcf} {input} 2> /dev/null"
- 
-@@ -199,6 +209,8 @@
-         workflow.cores
-     container:
-         None
-+    envmodules:
-+        "bcftools/1.22"
-     shell:
-         "bcftools norm --threads {threads} {params} -o {output.bcf} -f {input.genome} {input.bcf} 2> {log}"
- 
-@@ -211,6 +223,8 @@
-         "reports/data/variants.{type}.stats"
-     container:
-         None
-+    envmodules:
-+        "bcftools/1.22"
-     shell:
-         """
-         bcftools stats -s "-" --fasta-ref {input.genome} {input.bcf} > {output} 2> /dev/null
-@@ -241,8 +255,8 @@
-         lambda wc: "-P vcf:variants." + wc.get("type")
-     log:
-         "logs/variants.{type}.report.log"
--    conda:
--        "envs/report.yaml"
-+    envmodules:
-+         "r/4.5.0", "arrow/21.0.0"
-     retries:
-         3
-     shell:
